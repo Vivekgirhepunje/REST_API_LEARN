@@ -70,3 +70,9 @@ app.patch('/posts/edit/:id',(req,res)=>{
     post.content=req.body.content
     res.redirect('/posts')
 })
+app.delete("/posts/delete/:id",(req,res)=>{
+    let {id}= req.params
+    posts=posts.filter((p)=>id!==p.id)
+    // post.content=req.body.content
+    res.redirect('/posts')
+})
