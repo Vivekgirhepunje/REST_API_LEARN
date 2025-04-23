@@ -1,7 +1,12 @@
 const { name } = require('ejs')
 const express = require('express')
+const {v4:uuidv4}= require('uuid')
 const app = express()
 const path= require('path')
+var methodOverride= require('method-override')
+const { request } = require('http')
+
+app.use(methodOverride('_method'))
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.set("view engine","ejs")
@@ -16,17 +21,17 @@ app.listen(port,()=>{
 
 let posts=[
     {
-        id:"1a",
+        id:uuidv4(),
         username:"Vivek",
         content:"I Live in Lakhani"
     },
     {
-        id:"2b",
+        id:uuidv4(),
         username:"Prashant",
         content:"Hard Work Pays off!!"
     },
     {
-        id:"3c",
+        id:uuidv4(),
         username:"Kartik",
         content:"I have been to Mumbai"
     }
@@ -40,7 +45,8 @@ app.get('/posts/new',(req,res)=>{
 })
 app.post('/posts',(req,res)=>{
     let {username,content}=req.body
-    posts.push({username,content})
+    let id=uuidv4()
+    posts.push({id,username,content})
     res.redirect('/posts')
 })
 app.get('/posts/:id',(req,res)=>{
@@ -52,4 +58,15 @@ app.get('/posts/:id',(req,res)=>{
     else{
         res.send("Id don't exist")
     }
+})
+app.get('/posts/edit/:id',(req,res)=>{
+    let {id}= req.params
+    let post=posts.find((p)=>id===p.id)
+    res.render('edit.ejs',{post})
+})
+app.patch('/posts/edit/:id',(req,res)=>{
+    let {id}= req.params
+    let post=posts.find((p)=>id===p.id)
+    post.content=req.body.content
+    res.redirect('/posts')
 })
